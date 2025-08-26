@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:padding="16dp" android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView android:id="@+id/tvRoom" android:text="Not started" android:textSize="22sp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <Button android:id="@+id/btnStartLive" android:text="Start Live Tracking" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <TextView android:text="Live predictions are based on k-NN over stored fingerprints. Improve accuracy with more samples." android:layout_width="wrap_content" android:layout_height="wrap_content" android:paddingTop="8dp"/>
+</LinearLayout>
