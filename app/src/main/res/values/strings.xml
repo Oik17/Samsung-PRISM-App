@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Prism</string>
+    <string name="tracking_result">Predicted room: %1$s</string>
+    <string name="calibration_start">Calibrating: %1$s — collecting scans</string>
+    <string name="calibration_stop">Calibration stopped</string>
+    <string name="enter_room">Enter room id</string>
+</resources>
