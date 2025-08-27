@@ -1,15 +1,22 @@
 package com.prism.app.services
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.BroadcastReceiver
+import android.content.pm.PackageManager
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.prism.app.MainApplication
 import com.prism.app.R
 import com.prism.app.data.WifiFingerprint
@@ -22,21 +29,30 @@ class WifiScannerService : Service() {
     private lateinit var wifiManager: WifiManager
     private val scanReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
-            val results = wifiManager.scanResults
-            // process results
-            CoroutineScope(Dispatchers.IO).launch {
-                val repo = (application as MainApplication).repository
-                val roomId = (application as MainApplication).currentCalibrationRoomId
-                if (roomId != null) {
-                    for (r in results) {
-                        val fp = WifiFingerprint(
-                            roomId = roomId,
-                            ssid = r.SSID,
-                            bssid = r.BSSID,
-                            rssi = r.level
-                        )
-                        repo.saveWifiFingerprint(fp)
+            if (ContextCompat.checkSelfPermission(
+                    this@WifiScannerService,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                try {
+                    val results = wifiManager.scanResults
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val repo = (application as MainApplication).repository
+                        val roomId = (application as MainApplication).currentCalibrationRoomId
+                        if (roomId != null) {
+                            for (r in results) {
+                                val fp = WifiFingerprint(
+                                    roomId = roomId,
+                                    ssid = r.SSID,
+                                    bssid = r.BSSID,
+                                    rssi = r.level
+                                )
+                                repo.saveWifiFingerprint(fp)
+                            }
+                        }
                     }
+                } catch (e: SecurityException) {
+                    android.util.Log.e("WifiScannerService", "Permission denied for wifi scan results", e)
                 }
             }
         }
@@ -47,15 +63,23 @@ class WifiScannerService : Service() {
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         registerReceiver(scanReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
         startForeground(1, createNotification())
-        // kick off scanning loop
         scheduleScanLoop()
     }
 
     private fun scheduleScanLoop() {
-        // simple repeated scan - production: use AlarmManager / WorkManager or JobScheduler
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
-                wifiManager.startScan()
+                if (ContextCompat.checkSelfPermission(
+                        this@WifiScannerService,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    try {
+                        wifiManager.startScan()
+                    } catch (e: SecurityException) {
+                        android.util.Log.e("WifiScannerService", "Permission denied for wifi scan", e)
+                    }
+                }
                 kotlinx.coroutines.delay(5000)
             }
         }
@@ -70,7 +94,7 @@ class WifiScannerService : Service() {
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("Prism: scanning Wi-Fi")
             .setContentText("Collecting fingerprints")
-            .setSmallIcon(android.R.drawable.stat_sys_wifi)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .build()
     }
 

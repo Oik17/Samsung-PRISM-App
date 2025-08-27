@@ -6,7 +6,7 @@ import com.prism.app.data.WifiFingerprint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class Repository(context: Context) {
+class Repository(context: Context)  {
     private val dao = AppDatabase.get(context).prismDao()
 
     suspend fun saveWifiFingerprint(fp: WifiFingerprint) = withContext(Dispatchers.IO) {

@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
     version = 1,
     exportSchema = false
 )
-abstract class AppDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {   // ✅ FIXED name
     abstract fun prismDao(): PrismDao
 
     companion object {
@@ -19,7 +19,8 @@ abstract class AppDatabase : RoomDatabase() {
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context.applicationContext,
-                    AppDatabase::class.java, "prism-db"
+                    AppDatabase::class.java,
+                    "prism-db"
                 ).build().also { instance = it }
             }
     }
