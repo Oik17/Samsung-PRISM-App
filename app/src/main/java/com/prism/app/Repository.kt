@@ -24,4 +24,5 @@ class Repository(context: Context)  {
     suspend fun fingerprintsForRoom(roomId: String) = withContext(Dispatchers.IO) {
         dao.fingerprintsForRoom(roomId)
     }
+    suspend fun getAll(): List<WifiFingerprint> = dao.getAllFingerprints()
 }

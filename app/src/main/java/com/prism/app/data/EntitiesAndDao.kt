@@ -41,16 +41,27 @@ data class RoomLabel(
 @Dao
 interface PrismDao {
     // Wi-Fi
-    @Insert suspend fun insertWifi(vararg w: WifiFingerprint)
+    @Insert
+    suspend fun insertWifi(vararg w: WifiFingerprint)
+
     @Query("SELECT * FROM wifi_fingerprints WHERE roomId = :roomId")
     suspend fun fingerprintsForRoom(roomId: String): List<WifiFingerprint>
+
     @Query("SELECT * FROM wifi_fingerprints ORDER BY timestamp DESC LIMIT 500")
     suspend fun recentFingerprints(): List<WifiFingerprint>
 
+    @Query("SELECT * FROM wifi_fingerprints")
+    suspend fun getAllFingerprints(): List<WifiFingerprint>   // ✅ new function here
+
     // Sensors
-    @Insert suspend fun insertSensor(vararg s: SensorRaw)
-    @Insert suspend fun insertPdr(vararg p: PdrFeature)
-    @Insert suspend fun insertRoomLabel(vararg r: RoomLabel)
+    @Insert
+    suspend fun insertSensor(vararg s: SensorRaw)
+
+    @Insert
+    suspend fun insertPdr(vararg p: PdrFeature)
+
+    @Insert
+    suspend fun insertRoomLabel(vararg r: RoomLabel)
 
     @Query("SELECT COUNT(*) FROM wifi_fingerprints WHERE roomId = :roomId")
     suspend fun countFingerprints(roomId: String): Int
