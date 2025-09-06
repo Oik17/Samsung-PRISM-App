@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -17,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
+        <!-- Launcher Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -26,6 +29,19 @@
             </intent-filter>
         </activity>
 
+        <!-- Calibration Screen -->
+        <activity
+            android:name=".CalibrationActivity"
+            android:exported="true"
+            android:label="Calibration"/>
+
+        <!-- Detection Screen -->
+        <activity
+            android:name=".DetectionActivity"
+            android:exported="true"
+            android:label="Detection"/>
+
+        <!-- Wifi Scanner Service -->
         <service
             android:name=".services.WifiScannerService"
             android:exported="false"
